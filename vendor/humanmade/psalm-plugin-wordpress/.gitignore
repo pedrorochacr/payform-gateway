@@ -1,0 +1,5 @@
+.phpunit.result.cache
+composer.lock
+/stubs/wordpress/
+/stubs/vendor/
+/vendor/

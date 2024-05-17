@@ -1,0 +1,23 @@
+{
+    "name": "hudson/woo-multipay",
+    "description": "Plugin Woo MultiPay",
+    "type": "project",
+    "require-dev": {
+        "humanmade/psalm-plugin-wordpress": "^2.1",
+        "paulthewalton/acf-stubs": "^5.8"
+    },
+    "license": "GPL",
+    "autoload": {
+        "psr-4": {
+            "LPT\\Includes\\": "includes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Multifidelidade",
+            "email": "hudson@multifidelidade.com.br"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

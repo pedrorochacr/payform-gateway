@@ -1,0 +1,35 @@
+{
+	"name": "@wp-hooks/wordpress-core",
+	"version": "1.4.0",
+	"description": "All the actions and filters from WordPress core in machine-readable JSON format.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/wp-hooks/wordpress-core.git"
+	},
+	"keywords": [
+		"wordpress"
+	],
+	"files": [
+		"hooks",
+		"interface",
+		"readme.md"
+	],
+	"author": "John Blackbourn",
+	"license": "GPL-3.0-or-later",
+	"bugs": {
+		"url": "https://github.com/wp-hooks/wordpress-core/issues"
+	},
+	"homepage": "https://github.com/wp-hooks/wordpress-core#readme",
+	"devDependencies": {
+		"ajv-cli": "^3.3.0",
+		"npm-run-all": "^4.1.5"
+	},
+	"scripts": {
+		"check": "npm-run-all validate:** check:**",
+		"check:duplicate-actions": "jq --exit-status '[reduce .hooks[].name as $n ({}; .[$n] += 1) | to_entries[] | select(.value > 1)] == []' hooks/actions.json",
+		"check:duplicate-filters": "jq --exit-status '[reduce .hooks[].name as $n ({}; .[$n] += 1) | to_entries[] | select(.value > 1)] == []' hooks/filters.json",
+		"validate:schema": "ajv validate -s node_modules/ajv/lib/refs/json-schema-draft-07.json -d hooks/schema.json",
+		"validate:actions": "ajv validate -s hooks/schema.json -d hooks/actions.json",
+		"validate:filters": "ajv validate -s hooks/schema.json -d hooks/filters.json"
+	}
+}
