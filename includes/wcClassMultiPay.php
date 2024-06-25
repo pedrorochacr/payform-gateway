@@ -26,7 +26,7 @@ class WC_MultiPay
 			
 			add_filter('woocommerce_payment_gateways', array(__CLASS__, 'add_gateway'));
 			add_filter('woocommerce_available_payment_gateways', array(__CLASS__, 'hides_when_is_outside_brazil'));
-			add_filter('plugin_action_links_' . plugin_basename(WC_MULTIPAY_PLUGIN_FILE), array(__CLASS__, 'plugin_action_links'));
+			add_filter('plugin_action_links_' . plugin_basename(PAYFORM_PLUGIN_FILE), array(__CLASS__, 'plugin_action_links'));
 			
 			if(is_admin()) {
 				add_action('admin_notices', array(__CLASS__, 'ecfb_missing_notice'));
@@ -51,7 +51,7 @@ class WC_MultiPay
 	 * Load the plugin text domain for translation.
 	 */
 	public static function load_plugin_textdomain() {
-		load_plugin_textdomain('woo-multipay', false, dirname(plugin_basename(WC_MULTIPAY_PLUGIN_FILE)) . '/languages/');
+		load_plugin_textdomain('woo-multipay', false, dirname(plugin_basename(PAYFORM_PLUGIN_FILE)) . '/languages/');
 	}
 	
 	/**

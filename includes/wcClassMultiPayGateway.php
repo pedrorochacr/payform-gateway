@@ -20,7 +20,7 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 	*/
 	public function __construct() {
 		$this->id                 = 'multipay';
-		$this->icon               = apply_filters('woo_multipay_icon', plugins_url('assets/images/multipay.png', plugin_dir_path(__FILE__)));
+		$this->icon               = apply_filters('woo_multipay_icon', plugins_url('assets/images/payformLogo.png', plugin_dir_path(__FILE__)));
 		$this->method_title       = __('MultiPay', 'woo-multipay');
 		$this->method_description = __('Aceite pagamentos usando o MultiPay.', 'woo-multipay');
 		$this->order_button_text  = __('Prossiga para o pagamento', 'woo-multipay');
@@ -113,7 +113,7 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 			'enabled'              => array(
 				'title'   => __('Ativar/Desativar', 'woo-multipay'),
 				'type'    => 'checkbox',
-				'label'   => __('Ativar MultiPay', 'woo-multipay'),
+				'label'   => __('Ativar Payform', 'woo-multipay'),
 				'default' => 'yes',
 			),
 			'title'                => array(
@@ -121,40 +121,26 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 				'type'        => 'text',
 				'description' => __('Isso controla o título que o usuário vê durante o checkout.', 'woo-multipay'),
 				'desc_tip'    => true,
-				'default'     => __('MultiPay', 'woo-multipay'),
+				'default'     => __('PayForm', 'woo-multipay'),
 			),
 			'description'          => array(
 				'title'       => __('Descrição', 'woo-multipay'),
 				'type'        => 'textarea',
 				'description' => __('Isso controla a descrição que o usuário vê durante o checkout.', 'woo-multipay'),
-				'default'     => __('Pagar Via MultiPay', 'woo-multipay'),
+				'default'     => __('Pagar Via PayForm', 'woo-multipay'),
 			),
 			'merchantKey'         => array(
-				'title'       => __('MerchantKey', 'woo-multipay'),
+				'title'       => __('VendorId', 'woo-multipay'),
 				'type'        => 'text',
 				/* translators: %s: link to MultiPay settings */
 				'description' => sprintf(__('Digite seu MerchantKey. Isso é necessário para processar os pagamentos e as notificações. É possível gerar um novo token %s.', 'woo-multipay'), '<a href="https://forms.gle/ZqhYSWp5gUKzoiBH6" target="_blank">' . __('aqui', 'woo-multipay') . '</a>'),
 				'default'     => '',
 			),
 			'establishmentCode'         => array(
-				'title'       => __('EstablishmentCode', 'woo-multipay'),
+				'title'       => __('MarketplaceId', 'woo-multipay'),
 				'type'        => 'text',
-				'description' => __('Digite seu EstablishmentCode.', 'woo-multipay'),
+				'description' => __('Digite seu o id do seu marketplace.', 'woo-multipay'),
 				'default'     => '',
-			),
-			'qrcode_expiration'    => array(
-				'title'       => __('Expiração do Pagamento', 'woo-multipay'),
-				'type'        => 'checkbox',
-				'label'       => __('Ativar expiração do Pagamento', 'woo-multipay'),
-				'default'     => 'no',
-				'description' => sprintf(__('A expiração do Pagamento funciona apenas se o <a href="%s" target="_blank">Gerenciar estoque do WooCommerce</a> estiver ativado.<br />O tempo de expiração é controlado em <a href="%s">WooCommerce > Configurações > Produtos > Inventário > Manter estoque (minutos)</a>', 'woo-multipay'), esc_url('https://docs.woocommerce.com/document/configuring-woocommerce-settings/#inventory-options'), esc_url(admin_url('admin.php?page=wc-settings&tab=products&section=inventory'))),
-			),
-			'invoice_prefix'         => array(
-				'title'       => __('Prefixo de pagamento', 'woo-multipay'),
-				'type'        => 'text',
-				'description' => __('Insira um prefixo para os números de sua fatura. Se você usar sua conta do MultiPay para várias lojas, certifique-se de que esse prefixo não seja válido, pois o MultiPay não permitirá pagamentos com o mesmo número de fatura.', 'woo-multipay'),
-				'desc_tip'    => true,
-				'default'     => 'WC-',
 			),
 			'debug'                => array(
 				'title'       => __('Registro de depuração', 'woo-multipay'),

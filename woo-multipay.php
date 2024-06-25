@@ -2,11 +2,11 @@
 /*
  * Plugin MultiPay para WordPress
  * 
- * Plugin Name:     	 Multifidelidade - MultiPay Pagamentos - for WooCommerce
+ * Plugin Name:     	 Payform - for WooCommerce
  * Plugin URI:      	 https://github.com/dinhoguitars/woo-multipay/
  * Description:     	 Plugin for WooCommerce platform to make online payments (PicPay, Pix, Debit and Credit) as a payment gateway to WooCommerce.
- * Author:          	 Multifidelidade
- * Author URI:        	 https://multifidelidade.app/
+ * Author:          	 PrimeCode
+ * Author URI:        	 https://github.com/pedrorochacr
  * Text Domain:     	 woo-multipay
  * Domain Path:     	 /languages
  * License:              GPLv3 or later 

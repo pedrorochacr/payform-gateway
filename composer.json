@@ -1,6 +1,6 @@
 {
     "name": "hudson/woo-multipay",
-    "description": "Plugin Woo MultiPay",
+    "description": "Plugin Woo Payform",
     "type": "project",
     "require-dev": {
         "humanmade/psalm-plugin-wordpress": "^2.1",

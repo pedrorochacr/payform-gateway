@@ -17,7 +17,7 @@ if(function_exists('get_plugins')) {
 }
 ?>
 <div class="error">
-	<p><strong><?php esc_html_e('Pagamento MultiPay para WooCommerce', 'woo-multipay'); ?></strong> <?php esc_html_e('depende da última versão do Brazilian Market no WooCommerce para funcionar!', 'woo-multipay'); ?></p>
+	<p><strong><?php esc_html_e('Pagamento Payform para WooCommerce', 'woo-multipay'); ?></strong> <?php esc_html_e('depende da última versão do Brazilian Market no WooCommerce para funcionar!', 'woo-multipay'); ?></p>
 
 <?php if($is_installed && current_user_can('install_plugins')) : ?>
 		<p><a href="<?php echo esc_url(wp_nonce_url(self_admin_url('plugins.php?action=activate&plugin=woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php&plugin_status=active'), 'activate-plugin_woocommerce-extra-checkout-fields-for-brazil/woocommerce-extra-checkout-fields-for-brazil.php')); ?>" class="button button-primary"><?php esc_html_e('Ative o Brazilian Market on WooCommerce', 'woo-multipay'); ?></a></p>

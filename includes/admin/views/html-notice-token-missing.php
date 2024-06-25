@@ -11,6 +11,6 @@ if(!defined('ABSPATH')) {
 ?>
 
 <div class="error inline">
-	<p><strong><?php _e('MultiPay Desabilitado', 'woo-multipay'); ?></strong>: <?php _e('Você deve informar seu EstablishmentCode e MerchantKey.', 'woo-multipay'); ?>
+	<p><strong><?php _e('Payform Desabilitado', 'woo-multipay'); ?></strong>: <?php _e('Você deve informar seu VendorId e MarketplaceId.', 'woo-multipay'); ?>
 	</p>
 </div>

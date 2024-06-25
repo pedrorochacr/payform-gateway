@@ -104,7 +104,7 @@ class WC_MultiPay_API {
 	 */
 	protected function get_request_headers($token) {
 		return array(
-						'Authorization' => 'Bearer ' . $token,						
+						'Authorization' => 	'Basic zpk_test_lyt5MsgUnOSgaiFTyfqQyyU1',				
 						'Content-Type' => 'application/json',
 						'Accept' => 'application/json'
 					);
@@ -151,22 +151,23 @@ class WC_MultiPay_API {
 	protected function get_checkout_json($order) {
 		$cellphone = $order->get_meta('_billing_cellphone');
 		$document = $order->get_meta('_billing_cpf');
+		$marketplaceId = "4f9f57c1a9de418cba8686e9a20bd300";
+		$first_name =$order->get_billing_first_name();
+		$last_name = $order->get_billing_last_name();
 		
 		if(empty($cellphone)) {
 			$cellphone = $order->get_billing_phone();
 		}
-		
-		if($order->get_meta('_billing_persontype') == '2') {
-			$document = $order->get_meta('_billing_cnpj');
-		}
-		
-		$buyer = array(
-					'firstName' => $order->get_billing_first_name(),
-					'lastName' => $order->get_billing_last_name(),
-					'document' => $document,
-					'email' => $order->get_billing_email(),
-					'phone' => $cellphone
-				);			
+		$order_data = $order->get_data();
+		$cpf = $order->get_meta('_billing_cpf');
+		$formattedCpf = str_replace(['.', '-'], '', $cpf);
+		// $buyer = array(
+		// 			'firstName' => $order->get_billing_first_name(),
+		// 			'lastName' => $order->get_billing_last_name(),
+		// 			'document' => $document,
+		// 			'email' => $order->get_billing_email(),
+		// 			'phone' => $cellphone
+		// 		);			
 				
 				/*
 				"referenceId": "0000001",
@@ -188,20 +189,42 @@ class WC_MultiPay_API {
 				$payment['expiresAt'] = $expires_at->format('c'); // Date format ISO 8601
 			}
 		}
+		$order_billing_address_1 = $order_data['billing']['address_1'];
+		$order_billing_address_2 = $order_data['billing']['address_2'];
+		$order_billing_city = $order_data['billing']['city'];
+		$order_billing_state = $order_data['billing']['state'];
+
+		$cpf = "08011888650";
+		$address_1 = $order_billing_address_1;
+		$state =  $order_data['billing']['state'];
+		$city =$order_data['billing']['city'];
+		$value = $order_data['total'];
+		// $payment = array(
+		// 	'referenceId' => $this->gateway->invoice_prefix . $order->get_id(),
+		// 	'callbackUrl' => WC()->api_request_url('WC_MultiPay_Gateway'),
+		// 	'returnUrl' => $this->gateway->get_return_url($order),
+		// 	'address' =>$order_billing_address_1,
+		// 	'state' => $order_billing_state,
+		// 	'city' =>$order_billing_city,
+		// 	'value' => $order->get_total(),
+		// 	'cpf' => $document,
+		// 	'nome' => $order->get_billing_first_name()." ".$order->get_billing_last_name(),
+		// 	'email' => $order->get_billing_email(),
+		// 	'telefone' => $cellphone,
+		// 	'buyer' => $buyer,
+		// 	'expiresDt' => $payment['expiresAt']
+		// );
 
 		$payment = array(
-			'referenceId' => $this->gateway->invoice_prefix . $order->get_id(),
-			'callbackUrl' => WC()->api_request_url('WC_MultiPay_Gateway'),
-			'returnUrl' => $this->gateway->get_return_url($order),
+			'marketplaceId' => $marketplaceId,
+			'first_name' => $first_name,
+			'last_name' => $last_name,
+			'cpf' =>$formattedCpf,
+			'state' => $order_billing_state,
+			'city' =>$order_billing_city,
 			'value' => $order->get_total(),
-			'cpf' => $document,
-			'nome' => $order->get_billing_first_name()." ".$order->get_billing_last_name(),
-			'email' => $order->get_billing_email(),
-			'telefone' => $cellphone,
-			'buyer' => $buyer,
-			'expiresDt' => $payment['expiresAt']
+			'address_1' => $address_1,
 		);
-
 		return json_encode($payment);
 	}
 	
@@ -213,19 +236,34 @@ class WC_MultiPay_API {
 	 * @return array
 	 */
 	public function do_checkout_request($order) {
-		// Sets the json.
+		
 		$json = $this->get_checkout_json($order);
+		
 		$body = '';
+		$header = array(						
+			'Content-Type' => 'application/json',
+			'Accept' => 'application/json'
+		);
 		
 		if($this->gateway->debug == 'yes') {
 			$this->gateway->log->add($this->gateway->id, 'Get payment request for order ' . $order->get_order_number() . ' with the following data: ' . $json);
 		}
 
 		//Busca Token
-		$token = $this->get_request_token();
+		// $token = $this->get_request_token();
 			
-		$response = $this->do_request($this->get_payment_url(), 'POST', $json, $this->get_request_headers($token));
-
+		/*"referenceId": "100235",
+  			  "pagamentoSr": "https://multifidelidade.app/mobile/pay/pagar?idP=bHrPU1p6SVk=",
+  			  "expiresDt": "2023-03-01T17:00:00-02:00"
+  			*/
+			  //var_dump($json);
+		// return array(
+		// 		'referenceId'   => '100235',
+		// 		'pagamentoSr'  =>  'https://multifidelidade.app/mobile/pay/pagar?idP=bHrPU1p6SVk=',
+		// 		'expiresDt'  =>  '2023-03-01T17:00:00-02:00',
+		// 		'error' => ''
+		// 	);
+		$response = $this->do_request('https://cool-snakes-divide.loca.lt/createTransaction', 'POST', $json, $header);
 		if(is_wp_error($response)) {
 			if($this->gateway->debug == 'yes') {
 				$this->gateway->log->add($this->gateway->id, 'WP_Error in generate payment request: ' . $response->get_error_message());
@@ -243,7 +281,7 @@ class WC_MultiPay_API {
 		
 		if($response['response']['code'] === 200) {
 			if($this->gateway->debug == 'yes') {
-				$this->gateway->log->add($this->gateway->id, 'MultiPay Payment URL created with success! The return is: '
+				$this->gateway->log->add($this->gateway->id, 'Payform Payment URL created with success! The return is: '
 					. print_r($body, true));
 			}
 
@@ -254,7 +292,7 @@ class WC_MultiPay_API {
 
 			return array(
 				'referenceId'   => $body['referenceId'],
-				'pagamentoSr'  =>  $body['pagamentoSr'],
+				'pagamentoSr'  =>  $body['payLink'],
 				'expiresDt'  =>  $body['expiresDt'],
 				'error' => ''
 			);
@@ -279,7 +317,7 @@ class WC_MultiPay_API {
 				'referenceId'   => '',
 				'pagamentoSr'  =>  '',
 				'expiresDt'  =>  '',
-				'error' => array(__('Muito ruim! Os tokens do MultiPay são inválidos meu amiguinho!', 'woo-multipay'))
+				'error' => array(__('Tokens VendorId ou MarketplaceId inválidos', 'woo-multipay'))
 			);
 		}
 		else if(($response['response']['code'] === 422) || ($response['response']['code'] === 500)) {
@@ -287,7 +325,7 @@ class WC_MultiPay_API {
 				$errors = array();
 
 				if($this->gateway->debug == 'yes') {
-					$this->gateway->log->add($this->gateway->id, 'Falha ao gerar a URL de pagamento do MultiPay: ' . print_r( $response, true ) );
+					$this->gateway->log->add($this->gateway->id, 'Falha ao gerar a URL de pagamento do Payform: ' . print_r( $response, true ) );
 				}
 
 				return array(
@@ -300,7 +338,7 @@ class WC_MultiPay_API {
 		}
 		
 		if($this->gateway->debug == 'yes') {
-			$this->gateway->log->add($this->gateway->id, 'Erro ao gerar a URL de pagamento do MultiPay:' . print_r($response, true));
+			$this->gateway->log->add($this->gateway->id, 'Erro ao gerar a URL de pagamento do Payform:' . print_r($response, true));
 		}
 
 		// Return error message.
@@ -308,7 +346,7 @@ class WC_MultiPay_API {
 			'referenceId'   => '',
 			'pagamentoSr'  =>  '',
 			'expiresDt'  =>  '',
-			'error' => array('<strong>' . __('MultiPay', 'woo-multipay') . '</strong>: ' . __('Ocorreu um erro ao processar seu pagamento, tente novamente. Ou entre em contato conosco para obter assistência.', 'woo-multipay'))
+			'error' => array('<strong>' . __('Payform', 'woo-multipay') . '</strong>: ' . __('Ocorreu um erro ao processar seu pagamento, tente novamente. Ou entre em contato conosco para obter assistência.', 'woo-multipay'))
 		);
 	}
 	

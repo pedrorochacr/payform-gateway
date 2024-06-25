@@ -11,6 +11,6 @@ if(!defined('ABSPATH')) {
 ?>
 
 <div class="error inline">
-	<p><strong><?php _e('MultiPay Desabilitado', 'woo-multipay'); ?></strong>: <?php printf(__('A moeda <code>%s</code> não é suportada. Funciona apenas com o Real Brasileiro.', 'woo-multipay'), get_woocommerce_currency()); ?>
+	<p><strong><?php _e('Payform Desabilitado', 'woo-multipay'); ?></strong>: <?php printf(__('A moeda <code>%s</code> não é suportada. Funciona apenas com o Real Brasileiro.', 'woo-multipay'), get_woocommerce_currency()); ?>
 	</p>
 </div>
