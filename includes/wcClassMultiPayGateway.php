@@ -20,9 +20,10 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 	*/
 	public function __construct() {
 		$this->id                 = 'multipay';
+
 		$this->icon               = apply_filters('woo_multipay_icon', plugins_url('assets/images/payformLogo.png', plugin_dir_path(__FILE__)));
-		$this->method_title       = __('MultiPay', 'woo-multipay');
-		$this->method_description = __('Aceite pagamentos usando o MultiPay.', 'woo-multipay');
+		$this->method_title       = __('Payform', 'woo-multipay');
+		$this->method_description = __('Aceite pagamentos usando a Payform.', 'woo-multipay');
 		$this->order_button_text  = __('Prossiga para o pagamento', 'woo-multipay');
 
 		// Load the form fields.
@@ -130,17 +131,36 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 				'default'     => __('Pagar Via PayForm', 'woo-multipay'),
 			),
 			'merchantKey'         => array(
-				'title'       => __('VendorId', 'woo-multipay'),
+				'title'       => __('SellerId', 'woo-multipay'),
 				'type'        => 'text',
 				/* translators: %s: link to MultiPay settings */
-				'description' => sprintf(__('Digite seu MerchantKey. Isso é necessário para processar os pagamentos e as notificações. É possível gerar um novo token %s.', 'woo-multipay'), '<a href="https://forms.gle/ZqhYSWp5gUKzoiBH6" target="_blank">' . __('aqui', 'woo-multipay') . '</a>'),
+				'description' => sprintf(__('Digite seu SellerId. Isso é necessário para processar os pagamentos e as notificações', 'woo-multipay'), '<a href="https://forms.gle/ZqhYSWp5gUKzoiBH6" target="_blank">' . __('aqui', 'woo-multipay') . '</a>'),
 				'default'     => '',
 			),
-			'establishmentCode'         => array(
-				'title'       => __('MarketplaceId', 'woo-multipay'),
+			'maxPortion'         => array(
+				'title'       => __('Parcelas', 'woo-multipay'),
 				'type'        => 'text',
-				'description' => __('Digite seu o id do seu marketplace.', 'woo-multipay'),
+				/* translators: %s: link to MultiPay settings */
+				'description' => sprintf(__('Defina o número máximo de Parcelas que o cliente irá conseguir parcelar sem juros', 'woo-multipay'), '<a href="https://forms.gle/ZqhYSWp5gUKzoiBH6" target="_blank">' . __('aqui', 'woo-multipay') . '</a>'),
 				'default'     => '',
+			),
+			'creditCard'              => array(
+				'title'   => __('Cartão de Crédito', 'woo-multipay'),
+				'type'    => 'checkbox',
+				'label'   => __('Aceitar', 'woo-multipay'),
+				'default' => 'yes',
+			),
+			'pix'              => array(
+				'title'   => __('Pix', 'woo-multipay'),
+				'type'    => 'checkbox',
+				'label'   => __('Aceitar', 'woo-multipay'),
+				'default' => 'yes',
+			),
+			'ticket'              => array(
+				'title'   => __('Boleto', 'woo-multipay'),
+				'type'    => 'checkbox',
+				'label'   => __('Aceitar', 'woo-multipay'),
+				'default' => 'yes',
 			),
 			'debug'                => array(
 				'title'       => __('Registro de depuração', 'woo-multipay'),
@@ -148,7 +168,7 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 				'label'       => __('Ativar registro', 'woo-multipay'),
 				'default'     => 'no',
 				/* translators: %s: log page link */
-				'description' => sprintf(__('Grava eventos do MultiPay, como solicitações de API, dentro do arquivo %s', 'woo-multipay'), $this->get_log_view()),
+				'description' => sprintf(__('Grava eventos da Payform, como solicitações de API, dentro do arquivo %s', 'woo-multipay'), $this->get_log_view()),
 			),
 		);
 	}
@@ -284,7 +304,7 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 		@ob_clean();
 		$payment = $this->api->process_callback();
 		if(is_array($payment)) {
-			$order_id = intval(str_replace($this->invoice_prefix, '', $payment['referenceId']));
+			$order_id = intval($payment['referenceId']);
 			$order = wc_get_order($order_id);
 			$cancellation_id = $order->get_meta('MultiPay_cancellationId');
 			
@@ -320,7 +340,7 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 	 * @param array $payment Payment Status.
 	 */
 	public function update_order_status($payment) {
-		$id = intval(str_replace($this->invoice_prefix, '', $payment['referenceId']));
+		$id = intval($payment['referenceId']);
 		$order = wc_get_order($id);
 
 		// Check if order exists.
@@ -340,12 +360,12 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 		switch($payment['status']) {
 			case 'expired':
 				if(($order->get_status() == 'pending') || ($order->get_status() == 'on-hold')) {
-					$order->update_status('cancelled', __('MultiPay: Pagamento expirado.', 'woo-multipay'));
+					$order->update_status('cancelled', __('Payform: Pagamento expirado.', 'woo-multipay'));
 				}
 
 				break;
 			case 'analysis':
-				$order->update_status('on-hold', __('MultiPay: Pagamento em análise.', 'woo-multipay'));
+				$order->update_status('on-hold', __('Payform: Pagamento em análise.', 'woo-multipay'));
 				wc_reduce_stock_levels($order_id);
 				
 				break;
@@ -353,11 +373,11 @@ class WC_Multipay_Gateway extends WC_Payment_Gateway
 				if($order->get_status() == 'pending') {
 					wc_reduce_stock_levels($order_id);
 				}
-				$order->update_status('processing', __('MultiPay: Pagamento aprovado.', 'woo-multipay'));
+				$order->update_status('completed', __('Payform: Pagamento aprovado.', 'woo-multipay'));
 			
 				break;
 			case 'completed':
-				$order->add_order_note(__('MultiPay: Pagamento concluído e creditado em sua conta.', 'woo-multipay'));
+				$order->add_order_note(__('Payform: Pagamento concluído e creditado em sua conta.', 'woo-multipay'));
 				
 				break;
 			case 'refunded':

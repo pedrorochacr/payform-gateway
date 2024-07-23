@@ -191,14 +191,16 @@ class WC_MultiPay_API {
 		}
 		$order_billing_address_1 = $order_data['billing']['address_1'];
 		$order_billing_address_2 = $order_data['billing']['address_2'];
+		$order_billing_address_3 = $order->get_meta('_billing_address_3');
 		$order_billing_city = $order_data['billing']['city'];
 		$order_billing_state = $order_data['billing']['state'];
 
-		$cpf = "08011888650";
 		$address_1 = $order_billing_address_1;
 		$state =  $order_data['billing']['state'];
 		$city =$order_data['billing']['city'];
 		$value = $order_data['total'];
+		$postal_code = $order_data['billing']['postcode'];
+		$neighborhood = $order->get_meta('_billing_neighborhood');
 		// $payment = array(
 		// 	'referenceId' => $this->gateway->invoice_prefix . $order->get_id(),
 		// 	'callbackUrl' => WC()->api_request_url('WC_MultiPay_Gateway'),
@@ -216,6 +218,7 @@ class WC_MultiPay_API {
 		// );
 
 		$payment = array(
+			'orderId' => $order->get_id(),
 			'marketplaceId' => $marketplaceId,
 			'first_name' => $first_name,
 			'last_name' => $last_name,
@@ -223,7 +226,12 @@ class WC_MultiPay_API {
 			'state' => $order_billing_state,
 			'city' =>$order_billing_city,
 			'value' => $order->get_total(),
-			'address_1' => $address_1,
+			'line1' => $address_1,
+			'line2' => $order_billing_address_2,
+			'line3' => $order_billing_address_3,
+			'postal_code' => $postal_code,
+			'country_code' => 'BR',
+			'neighborhood' =>$neighborhood
 		);
 		return json_encode($payment);
 	}
@@ -239,6 +247,7 @@ class WC_MultiPay_API {
 		
 		$json = $this->get_checkout_json($order);
 		
+		var_dump($json);
 		$body = '';
 		$header = array(						
 			'Content-Type' => 'application/json',
@@ -249,21 +258,8 @@ class WC_MultiPay_API {
 			$this->gateway->log->add($this->gateway->id, 'Get payment request for order ' . $order->get_order_number() . ' with the following data: ' . $json);
 		}
 
-		//Busca Token
-		// $token = $this->get_request_token();
-			
-		/*"referenceId": "100235",
-  			  "pagamentoSr": "https://multifidelidade.app/mobile/pay/pagar?idP=bHrPU1p6SVk=",
-  			  "expiresDt": "2023-03-01T17:00:00-02:00"
-  			*/
-			  //var_dump($json);
-		// return array(
-		// 		'referenceId'   => '100235',
-		// 		'pagamentoSr'  =>  'https://multifidelidade.app/mobile/pay/pagar?idP=bHrPU1p6SVk=',
-		// 		'expiresDt'  =>  '2023-03-01T17:00:00-02:00',
-		// 		'error' => ''
-		// 	);
-		$response = $this->do_request('https://cool-snakes-divide.loca.lt/createTransaction', 'POST', $json, $header);
+
+		$response = $this->do_request('https://chatty-cougars-sit.loca.lt/createTransaction', 'POST', $json, $header);
 		if(is_wp_error($response)) {
 			if($this->gateway->debug == 'yes') {
 				$this->gateway->log->add($this->gateway->id, 'WP_Error in generate payment request: ' . $response->get_error_message());
@@ -391,11 +387,11 @@ class WC_MultiPay_API {
 		}
 		
 		//Busca Token
-		$token = $this->get_request_token();
+		//$token = $this->get_request_token();
 
 		// Get payment Status.		
-		$res_status = $this->do_request($this->get_status_url($payment['referenceId']), 'GET', array(), $this->get_request_headers($token));
-		$res_status = json_decode($res_status['body'], true);
+		$res_status = $payment['status'];
+
 		
 		if(json_last_error() != JSON_ERROR_NONE) {
 			if($this->gateway->debug == 'yes') {
@@ -404,16 +400,7 @@ class WC_MultiPay_API {
 			
 			return false;
 		}
-		
-		if(array_key_exists('status', $res_status)) {
-			if($this->gateway->debug == 'yes') {
-				$this->gateway->log->add($this->gateway->id, 'A resposta de status do MultiPay é válida! O retorno é: ' . print_r($res_status, true));
-			}
-			
-			$payment['status'] = $res_status['status'];
-			
-			return $payment;
-		}
+		return $payment;
 		
 		if($this->gateway->debug == 'yes') {
 			$this->gateway->log->add($this->gateway->id, 'Resposta do status de pagamento do MultiPay: ' . print_r($res_status, true));

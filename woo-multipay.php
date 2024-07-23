@@ -2,11 +2,11 @@
 /*
  * Plugin MultiPay para WordPress
  * 
- * Plugin Name:     	 Payform - for WooCommerce
- * Plugin URI:      	 https://github.com/dinhoguitars/woo-multipay/
- * Description:     	 Plugin for WooCommerce platform to make online payments (PicPay, Pix, Debit and Credit) as a payment gateway to WooCommerce.
- * Author:          	 PrimeCode
- * Author URI:        	 https://github.com/pedrorochacr
+ * Plugin Name:     	 Payform-Gateway Pagamento com baixas taxas
+ * Plugin URI:      	 https://github.com/pedrorochacr/payform-gateway
+ * Description:     	 Payform Plugin Gateway Pagamentos Brasil (Cartões de Credito, Cartões de Debito, Pix, Boleto Bancario)
+ * Author:          	 Payform
+ * Author URI:        	 https://payform.com.br/
  * Text Domain:     	 woo-multipay
  * Domain Path:     	 /languages
  * License:              GPLv3 or later 
